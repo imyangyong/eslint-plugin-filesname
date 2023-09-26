@@ -13,7 +13,7 @@ An ESLint plugin to check filenames with simple configuration.
 
 <!-- Badges -->
 
-[npm-version-src]: https://img.shields.io/npm/v/eslint-plugin-imyangyong?style=flat&colorA=080f12&colorB=1fa669
-[npm-version-href]: https://npmjs.com/package/eslint-plugin-imyangyong
-[npm-downloads-src]: https://img.shields.io/npm/dm/eslint-plugin-imyangyong?style=flat&colorA=080f12&colorB=1fa669
-[npm-downloads-href]: https://npmjs.com/package/eslint-plugin-imyangyong
+[npm-version-src]: https://img.shields.io/npm/v/eslint-plugin-filesname?style=flat&colorA=080f12&colorB=1fa669
+[npm-version-href]: https://npmjs.com/package/eslint-plugin-filesname
+[npm-downloads-src]: https://img.shields.io/npm/dm/eslint-plugin-filesname?style=flat&colorA=080f12&colorB=1fa669
+[npm-downloads-href]: https://npmjs.com/package/eslint-plugin-filesname
