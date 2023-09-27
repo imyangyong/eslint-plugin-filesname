@@ -15,8 +15,11 @@ type UnitCase = {
 const valids: UnitCase[]  = [
   {
     code: 'var foo = \'bar\';',
-    filename: 'src/components/Login.jsx',
-    options: [{ '**/*.js': 'CAMEL_CASE', '**/*.jsx': ['CAMEL_CASE', 'PASCAL_CASE'] }],
+    filename: '/Users/yangyong/i/eslint-config/test/fixtures.test.ts',
+    options: [{
+      '!**/*.(vue|jsx|tsx)': ['KEBAB_CASE', 'CAMEL_CASE', 'SCREAMING_SNAKE_CASE'],
+      '**/*.(vue|jsx|tsx)': 'PASCAL_CASE',
+    },{ ignoreMiddleExtensions: true }],
   },
   {
     code: 'var foo = \'bar\';',

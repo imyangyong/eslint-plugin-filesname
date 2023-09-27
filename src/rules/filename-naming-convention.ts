@@ -29,9 +29,6 @@ export default createEslintRule<Options, MessageIds>({
     schema: [
       {
         type: 'object',
-        additionalProperties: {
-          type: 'string',
-        },
       },
       {
         type: 'object',
@@ -89,11 +86,11 @@ export default createEslintRule<Options, MessageIds>({
           }
         }
 
-        const notMatchedPattern = [] as string[]
         for (const [
           originalFilenamePattern,
           originalNamingPattern,
         ] of Object.entries(rules)) {
+          const notMatchedPattern: string[] = []
           for (const namingPattern of toArray(originalNamingPattern)) {
             checkRule(originalFilenamePattern, namingPattern, (pattern) => {
               notMatchedPattern.push(pattern)

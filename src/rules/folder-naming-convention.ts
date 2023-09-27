@@ -36,9 +36,6 @@ export default createEslintRule<Options, MessageIds>({
     schema: [
       {
         type: 'object',
-        additionalProperties: {
-          type: 'string',
-        },
       },
     ],
     messages: {
@@ -92,8 +89,8 @@ export default createEslintRule<Options, MessageIds>({
                 .filter(isNotEmpty)
                 .reduce((s, p) => s.concat(getAllFolders(p)), [])
 
-              const notMatchedPattern = [] as string[]
               for (const folder of folders) {
+                const notMatchedPattern: string[] = []
                 for (const _namingPattern of toArray(namingPattern)) {
                   checkRule(folder, _namingPattern, (pattern) => {
                     notMatchedPattern.push(pattern)

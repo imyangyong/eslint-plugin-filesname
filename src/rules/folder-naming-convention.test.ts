@@ -16,11 +16,6 @@ const valids: UnitCase[] = [
   {
     code: 'var foo = \'bar\';',
     filename: 'src/components/DisplayLabel/__tests__/displayLabel.test.js',
-    options: [{ '*/__tests__/': 'PASCAL_CASE', 'src/*/': 'CAMEL_CASE' }],
-  },
-  {
-    code: 'var foo = \'bar\';',
-    filename: 'src/components/DisplayLabel/__tests__/displayLabel.test.js',
     options: [{ '*/__tests__/': 'PASCAL_CASE', 'src/*/': ['CAMEL_CASE', 'PASCAL_CASE'] }],
   },
   {
