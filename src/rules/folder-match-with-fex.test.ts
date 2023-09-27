@@ -1,7 +1,18 @@
 import { RuleTester } from '../../vendor/rule-tester/src/RuleTester'
 import rule, { type MessageIds, type Options, RULE_NAME } from './folder-match-with-fex'
 
-const valids = [
+type UnitCase = {
+  code: string;
+  filename: string;
+  options: Options
+  errors?: {
+    message: string,
+    column: number,
+    line: number,
+  }[],
+}
+
+const valids: UnitCase[] = [
   {
     code: 'var foo = \'bar\';',
     filename: '/__tests__/foo.test.js',
@@ -22,9 +33,9 @@ const valids = [
     filename: '/bar/__tests__/foo.test.js',
     options: [{ '*.js': '**/__tests__/' }],
   },
-] as const
+]
 
-const invalids = [
+const invalids: UnitCase[] = [
   {
     code: 'var foo = \'bar\';',
     filename: '/bar/__test__/foo.test.js',
@@ -38,7 +49,7 @@ const invalids = [
       },
     ],
   },
-] as const
+]
 
 const ruleTester: RuleTester = new RuleTester({
   parser: require.resolve('@typescript-eslint/parser'),

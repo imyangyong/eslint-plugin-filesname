@@ -3,6 +3,7 @@
  */
 
 import { TEMPLATE_VARIABLE_REGEXP } from '../constants/regex'
+import type { Arrayable, Nullable } from './types'
 
 /**
  * Checks if the given argument is an object
@@ -94,6 +95,16 @@ function template(tpl: string) {
       new RegExp(TEMPLATE_VARIABLE_REGEXP, 'g'),
       (_, key) => data[key.trim()],
     )
+}
+
+/**
+ * Convert `Arrayable<T>` to `Array<T>`
+ *
+ * @category Array
+ */
+export function toArray<T>(array?: Nullable<Arrayable<T>>): Array<T> {
+  array = array ?? []
+  return Array.isArray(array) ? array : [array]
 }
 
 export {

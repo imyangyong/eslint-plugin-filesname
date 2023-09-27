@@ -1,15 +1,36 @@
 import { RuleTester } from '../../vendor/rule-tester/src/RuleTester'
 import rule, { type MessageIds, type Options, RULE_NAME } from './folder-naming-convention'
 
-const valids = [
+type UnitCase = {
+  code: string;
+  filename: string;
+  options: Options
+  errors?: {
+    message: string,
+    column: number,
+    line: number,
+  }[],
+}
+
+const valids: UnitCase[] = [
   {
     code: 'var foo = \'bar\';',
     filename: 'src/components/DisplayLabel/__tests__/displayLabel.test.js',
     options: [{ '*/__tests__/': 'PASCAL_CASE', 'src/*/': 'CAMEL_CASE' }],
   },
-] as const
+  {
+    code: 'var foo = \'bar\';',
+    filename: 'src/components/DisplayLabel/__tests__/displayLabel.test.js',
+    options: [{ '*/__tests__/': 'PASCAL_CASE', 'src/*/': ['CAMEL_CASE', 'PASCAL_CASE'] }],
+  },
+  {
+    code: 'var foo = \'bar\';',
+    filename: 'src/Components/DisplayLabel/__tests__/displayLabel.test.js',
+    options: [{ '*/__tests__/': 'PASCAL_CASE', 'src/*/': ['CAMEL_CASE', 'PASCAL_CASE'] }],
+  },
+]
 
-const invalids = [
+const invalids: UnitCase[] = [
   {
     code: 'var foo = \'bar\';',
     filename: 'src/Components/DisplayLabel/__tests__/displayLabel.test.js',
@@ -36,7 +57,7 @@ const invalids = [
       },
     ],
   },
-] as const
+]
 
 const ruleTester: RuleTester = new RuleTester({
   parser: require.resolve('@typescript-eslint/parser'),

@@ -12,10 +12,11 @@ import {
 import {
   FILENAME_NAMING_CONVENTION_ERROR_MESSAGE,
 } from '../constants/message'
+import { toArray } from '../utils/utility'
 
 export const RULE_NAME = 'filename-naming-convention'
 export type MessageIds = ''
-export type Options = [Record<string, string>, { ignoreMiddleExtensions?: boolean }] | [Record<string, string>]
+export type Options = [Record<string, string | string[]>, { ignoreMiddleExtensions?: boolean }] | [Record<string, string | string[]>]
 
 export default createEslintRule<Options, MessageIds>({
   name: RULE_NAME,
@@ -69,39 +70,47 @@ export default createEslintRule<Options, MessageIds>({
         const filename = getFilename(filenameWithPath)
         const { ignoreMiddleExtensions } = context.options[1] || {}
 
+        function checkRule(originalFilenamePattern: string, originalNamingPattern: string, errorCb? : (pattern: string) => void) {
+          const [filenamePattern, namingPattern]
+            = transformRuleWithPrefinedMatchSyntax(
+              [originalFilenamePattern, originalNamingPattern],
+              filenameWithPath,
+            )
+
+          const matchResult = matchRule(
+            filenameWithPath,
+            filenamePattern,
+            getBasename(filename, ignoreMiddleExtensions),
+            namingPattern,
+          )
+
+          if (matchResult) {
+            errorCb && errorCb(originalNamingPattern)
+          }
+        }
+
+        const notMatchedPattern = [] as string[]
         for (const [
           originalFilenamePattern,
           originalNamingPattern,
         ] of Object.entries(rules)) {
-          try {
-            const [filenamePattern, namingPattern]
-              = transformRuleWithPrefinedMatchSyntax(
-                [originalFilenamePattern, originalNamingPattern],
-                filenameWithPath,
-              )
-
-            const matchResult = matchRule(
-              filenameWithPath,
-              filenamePattern,
-              getBasename(filename, ignoreMiddleExtensions),
-              namingPattern,
-            )
-
-            if (matchResult) {
-              throw new Error(
-                FILENAME_NAMING_CONVENTION_ERROR_MESSAGE(
-                  filename,
-                  originalNamingPattern,
-                ),
-              )
-            }
+          for (const namingPattern of toArray(originalNamingPattern)) {
+            checkRule(originalFilenamePattern, namingPattern, (pattern) => {
+              notMatchedPattern.push(pattern)
+            })
           }
-          catch (error) {
+
+          // NOTE: if all naming patterns are invalid, report the error
+          if (notMatchedPattern.length >= toArray(originalNamingPattern).length) {
             context.report({
               node,
               // @ts-expect-error message way instead of messageId
-              message: error.message,
+              message: FILENAME_NAMING_CONVENTION_ERROR_MESSAGE(
+                filename,
+                notMatchedPattern.join(' or ')
+              ),
             })
+            return
           }
         }
       },

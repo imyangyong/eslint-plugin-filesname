@@ -1,11 +1,22 @@
 import { RuleTester } from '../../vendor/rule-tester/src/RuleTester'
 import rule, { type MessageIds, type Options, RULE_NAME } from './filename-naming-convention'
 
-const valids = [
+type UnitCase = {
+  code: string;
+  filename: string;
+  options: Options
+  errors?: {
+    message: string,
+    column: number,
+    line: number,
+  }[],
+}
+
+const valids: UnitCase[]  = [
   {
     code: 'var foo = \'bar\';',
-    filename: 'src/components/login.jsx',
-    options: [{ '**/*.js': 'CAMEL_CASE', '**/*.jsx': 'CAMEL_CASE' }],
+    filename: 'src/components/Login.jsx',
+    options: [{ '**/*.js': 'CAMEL_CASE', '**/*.jsx': ['CAMEL_CASE', 'PASCAL_CASE'] }],
   },
   {
     code: 'var foo = \'bar\';',
@@ -37,17 +48,17 @@ const valids = [
     filename: 'src/classes/g2tClass.js',
     options: [{ '**/*.js': 'CAMEL_CASE', '**/*.jsx': 'CAMEL_CASE' }],
   },
-] as const
+]
 
-const invalids = [
+const invalids: UnitCase[] = [
   {
     code: 'var foo = \'bar\';',
-    filename: 'src/utils/CalculatePrice.js',
-    options: [{ '**/*.js': 'CAMEL_CASE', '**/*.jsx': 'CAMEL_CASE' }],
+    filename: 'src/utils/Calculate_Price.jsx',
+    options: [{ '**/*.js': 'CAMEL_CASE', '**/*.jsx': ['CAMEL_CASE', 'PASCAL_CASE'] }],
     errors: [
       {
         message:
-          'The filename "CalculatePrice.js" does not match the "CAMEL_CASE" pattern',
+          'The filename "Calculate_Price.jsx" does not match the "CAMEL_CASE or PASCAL_CASE" pattern',
         column: 1,
         line: 1,
       },
@@ -105,7 +116,7 @@ const invalids = [
       },
     ],
   },
-] as const
+]
 
 const ruleTester: RuleTester = new RuleTester({
   parser: require.resolve('@typescript-eslint/parser'),

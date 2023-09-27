@@ -19,10 +19,11 @@ import NAMING_CONVENTION from '../constants/naming-convention'
 import {
   FOLDER_NAMING_CONVENTION_ERROR_MESSAGE,
 } from '../constants/message'
+import { toArray } from '../utils/utility'
 
 export const RULE_NAME = 'folder-naming-convention'
 export type MessageIds = ''
-export type Options = [Record<string, string>]
+export type Options = [Record<string, string | string[]>]
 
 export default createEslintRule<Options, MessageIds>({
   name: RULE_NAME,
@@ -70,6 +71,15 @@ export default createEslintRule<Options, MessageIds>({
         const folderPath = getFolderPath(filenameWithPath)
         const subPaths = getSubPaths(folderPath)
 
+        function checkRule(folder: string, namingPattern: string, errorCb? : (pattern: string) => void) {
+          if (!micromatch.isMatch(
+            folder,
+            NAMING_CONVENTION[namingPattern as keyof typeof NAMING_CONVENTION] || namingPattern,
+          )) {
+            errorCb && errorCb(namingPattern)
+          }
+        }
+
         for (const path of subPaths) {
           for (const [folderPattern, namingPattern] of Object.entries(rules)) {
             if (!micromatch.isMatch(path, folderPattern)) {
@@ -82,19 +92,22 @@ export default createEslintRule<Options, MessageIds>({
                 .filter(isNotEmpty)
                 .reduce((s, p) => s.concat(getAllFolders(p)), [])
 
+              const notMatchedPattern = [] as string[]
               for (const folder of folders) {
-                if (
-                  !micromatch.isMatch(
-                    folder,
-                    NAMING_CONVENTION[namingPattern as keyof typeof NAMING_CONVENTION] || namingPattern,
-                  )
-                ) {
+                for (const _namingPattern of toArray(namingPattern)) {
+                  checkRule(folder, _namingPattern, (pattern) => {
+                    notMatchedPattern.push(pattern)
+                  })
+                }
+
+                // NOTE: if all naming patterns are invalid, report the error
+                if (notMatchedPattern.length >= toArray(namingPattern).length) {
                   context.report({
                     node,
                     // @ts-expect-error message way instead of messageId
                     message: FOLDER_NAMING_CONVENTION_ERROR_MESSAGE(
                       folder,
-                      namingPattern,
+                      notMatchedPattern.join(' or '),
                     ),
                   })
                   return
